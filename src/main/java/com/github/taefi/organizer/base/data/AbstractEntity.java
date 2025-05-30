@@ -1,4 +1,4 @@
-package com.github.taefi.organizer.data;
+package com.github.taefi.organizer.base.data;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +12,7 @@ public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idgenerator")
-    // The initial value is to account for data.sql demo data ids
-    @SequenceGenerator(name = "idgenerator", initialValue = 1000)
+    @SequenceGenerator(name = "idgenerator", sequenceName = "id_sequence", allocationSize = 1)
     private Long id;
 
     @Version

@@ -1,8 +1,9 @@
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 
 export const config: ViewConfig = {
-  menu: { order: 0, icon: 'line-awesome/svg/globe-africa-solid.svg' },
+  menu: { order: 30, icon: 'vaadin:globe' },
   title: 'Public Events',
+  loginRequired: false,
 };
 
 export default function PublicEventsView() {
