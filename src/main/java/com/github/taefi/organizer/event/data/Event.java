@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "events")
@@ -33,6 +34,13 @@ public class Event extends AbstractEntity {
     @NotNull
     @Column
     private Integer capacity;
+
+    @NotNull
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
+    @Column(name = "event_key")
+    private UUID key;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -92,5 +100,21 @@ public class Event extends AbstractEntity {
 
     public void setOrganizer(User organizer) {
         this.organizer = organizer;
+    }
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public UUID getKey() {
+        return key;
+    }
+
+    public void setKey(UUID key) {
+        this.key = key;
     }
 }

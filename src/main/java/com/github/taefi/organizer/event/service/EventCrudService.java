@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.UUID;
 
 @BrowserCallable
 @PermitAll
@@ -25,11 +26,13 @@ public class EventCrudService extends CrudRepositoryService<Event, Long, EventRe
 
     @RolesAllowed("ORGANIZER")
     @Override
-    public @Nullable Event save(Event value) {
-        if (value.getId() == null) {
-            value.setOrganizer(authenticatedUser.get().get());
+    public @Nullable Event save(Event event) {
+        // TODO: introduce DTO to prevent overwriting the organizer or key
+        if (event.getId() == null) {
+            event.setOrganizer(authenticatedUser.get().get());
+            event.setKey(UUID.randomUUID());
         }
-        return super.save(value);
+        return super.save(event);
     }
 
     @Override

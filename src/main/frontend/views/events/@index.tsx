@@ -3,7 +3,7 @@ import {AutoForm, AutoGrid, AutoGridRef} from "@vaadin/hilla-react-crud";
 import {EventCrudService} from "Frontend/generated/endpoints";
 import EventModel from "Frontend/generated/com/github/taefi/organizer/event/data/EventModel";
 import {
-    Button,
+    Button, GridColumn,
     HorizontalLayout,
     Icon,
     MasterDetailLayout,
@@ -13,6 +13,7 @@ import {
 import type Event from "Frontend/generated/com/github/taefi/organizer/event/data/Event";
 import {useSignal} from "@vaadin/hilla-react-signals";
 import {ForwardedRef, useRef} from "react";
+import {useNavigate} from "react-router";
 
 export const config: ViewConfig = {
     menu: { order: 10, icon: 'vaadin:list' },
@@ -64,6 +65,16 @@ interface EventListProps {
 }
 
 function EventList({ selectedEvent, onSelect, autoGridRef, initNewEvent }: EventListProps) {
+    const navigate = useNavigate();
+
+    function inviteButtonRenderer({ item }: { item: Event }) {
+        return item.public ?
+            <Button disabled>Public</Button> :
+            <Button theme="primary" onClick={() => navigate(`/invitations/create/${item.id}`)}>
+                Invite
+            </Button>;
+    }
+
     return (
         <VerticalLayout style={{ height: '100%', border: '1px solid var(--lumo-contrast-20pct)' }}>
             <HorizontalLayout theme="spacing padding" style={{ width: '100%', alignItems: 'center' }}>
@@ -84,8 +95,12 @@ function EventList({ selectedEvent, onSelect, autoGridRef, initNewEvent }: Event
                 onActiveItemChanged={(e) => {
                     onSelect(e.detail.value ?? null)
                 }}
-                hiddenColumns={['location', 'capacity', 'organizer']}
-                ref={autoGridRef} />
+                hiddenColumns={['location', 'capacity', 'organizer', 'key', 'public']}
+                ref={autoGridRef}
+                customColumns={[
+                    <GridColumn key="supplierInfo" renderer={inviteButtonRenderer} width='50px'/>
+                ]}
+            />
         </VerticalLayout>
     );
 }
@@ -105,7 +120,7 @@ function EventDetails({ onClose, item, afterSave }: EventDetailProps) {
                 service={EventCrudService}
                 model={EventModel}
                 item={item}
-                hiddenFields={['organizer']}
+                hiddenFields={['organizer', 'key']}
                 onSubmitSuccess={(submitEvt) => {
                     afterSave(submitEvt.item);
                     onClose();
