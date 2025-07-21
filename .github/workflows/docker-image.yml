@@ -1,0 +1,78 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - '24.5'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up JDK 21 for the build
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Set up Node.js v20.11.1
+      - name: Set up Node.js v20.11.1
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.11.1'
+          cache: 'npm'
+
+      # Build the Vaadin Hilla application using Maven
+      - name: Build with Maven
+        run: mvn clean package -Pproduction
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Generate date-based version
+        id: version
+        run: echo "VERSION=$(date +'%Y.%m.%d-%H.%M.%S')" >> $GITHUB_ENV
+
+      # Sanitize the branch name for Docker tags
+      - name: Sanitize branch name
+        id: vars
+        run: |
+          SANITIZED_BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's/\//-/g' | tr '[:upper:]' '[:lower:]')
+          echo "SANITIZED_BRANCH=$SANITIZED_BRANCH" >> $GITHUB_ENV
+
+      # Concatenate the branch name and version date
+      - name: Concatenate branch name and version date
+        id: concatenated_tag
+        run: |
+          TAG="${SANITIZED_BRANCH}-${VERSION}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:${{ env.TAG }}
+
+      # Verify Docker image
+      - name: Verify Docker image
+        run: |
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:${{ env.TAG }}
