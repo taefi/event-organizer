@@ -7,7 +7,7 @@
     "@vaadin/bundles": "24.8.3",
     "@vaadin/common-frontend": "0.0.19",
     "@vaadin/hilla-file-router": "24.8.2",
-    "@vaadin/hilla-frontend": "file:../../vaadin/hilla/packages/ts/frontend/vaadin-hilla-frontend-24.8.0-alpha7.tgz",
+    "@vaadin/hilla-frontend": "24.8.2",
     "@vaadin/hilla-lit-form": "24.8.2",
     "@vaadin/hilla-react-auth": "24.8.2",
     "@vaadin/hilla-react-crud": "24.8.2",
