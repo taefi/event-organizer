@@ -1,29 +1,13 @@
 import { createMenuItems, useViewConfig } from '@vaadin/hilla-file-router/runtime.js';
-import { effect, signal } from '@vaadin/hilla-react-signals';
 import { AppLayout, Avatar, Button, DrawerToggle, Icon, SideNav, SideNavItem } from '@vaadin/react-components';
 import { useAuth } from 'Frontend/util/auth.js';
-import { Suspense, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import '@vaadin/icons';
-
-const documentTitleSignal = signal('');
-effect(() => {
-  document.title = documentTitleSignal.value;
-});
-
-// Publish for Vaadin to use
-(window as any).Vaadin.documentTitleSignal = documentTitleSignal;
 
 export default function MainLayout() {
   const currentTitle = useViewConfig()?.title;
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    if (currentTitle) {
-      documentTitleSignal.value = currentTitle;
-    }
-  }, [currentTitle]);
 
     const { state, logout } = useAuth();
     const profilePictureUrl =
@@ -69,12 +53,12 @@ export default function MainLayout() {
 
             <DrawerToggle slot="navbar" aria-label="Menu toggle"></DrawerToggle>
             <h1 slot="navbar" className="text-l m-0">
-                {documentTitleSignal}
+                {currentTitle || 'Event Organizer'}
             </h1>
 
-            <Suspense>
+
                 <Outlet />
-            </Suspense>
+
         </AppLayout>
     );
 }

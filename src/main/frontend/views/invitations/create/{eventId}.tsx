@@ -6,8 +6,8 @@ import {EventCrudService, InvitationService} from "Frontend/generated/endpoints"
 import {
     Button,
     DateTimePicker,
-    FormLayout, Grid, GridColumn,
-    HorizontalLayout, ProgressBar,
+    FormLayout, FormRow, Grid, GridColumn,
+    HorizontalLayout,
     TextArea,
     TextField,
     VerticalLayout
@@ -23,12 +23,6 @@ export const config: ViewConfig = {
     rolesAllowed: ['ORGANIZER'],
 };
 
-const responsiveSteps = [
-    { minWidth: '0', columns: 1 },
-    { minWidth: '500px', columns: 2 },
-    { minWidth: '800px', columns: 3 },
-];
-
 export default function CreateInvitationsView() {
     const navigate = useNavigate();
     const { eventId } = useParams();
@@ -41,26 +35,33 @@ export default function CreateInvitationsView() {
     }, []);
 
     const subscription = useSignal<Subscription<InvitationResult>>();
-    const progress = useSignal(0);
 
     const processedEmails = useSignal<InvitationResult[]>([]);
 
     return (
         <VerticalLayout theme="padding">
-            <FormLayout responsiveSteps={responsiveSteps}>
-                <TextField label='Title' value={event.value?.title} readonly></TextField>
-                <TextField label='Description' value={event.value?.description} readonly></TextField>
-                <TextField label='Capacity' value={event.value?.capacity?.toString()} readonly></TextField>
-                <DateTimePicker label='Start' value={event.value?.start} readonly></DateTimePicker>
-                <DateTimePicker label='End' value={event.value?.end} readonly></DateTimePicker>
-                <TextField label='Location' value={event.value?.location} readonly data-colspan="2"></TextField>
-                <TextArea label='Emails to invite (separated by commas)'
-                          placeholder='Enter email addresses here...'
-                          data-colspan="3"
-                          value={emails.value}
-                          helperText="Please enter email addresses separated by commas."
-                          minRows={3} maxRows={5}
-                          onValueChanged={(e) => emails.value = e.detail.value} />
+            <FormLayout autoResponsive expandColumns expandFields>
+                <FormRow>
+                    <TextField label='Title' value={event.value?.title} readonly></TextField>
+                    <TextField label='Description' value={event.value?.description} readonly data-colspan="2"></TextField>
+                </FormRow>
+                <FormRow>
+                    <DateTimePicker label='Start' value={event.value?.start} readonly></DateTimePicker>
+                    <DateTimePicker label='End' value={event.value?.end} readonly></DateTimePicker>
+                    <TextField label='Capacity' value={event.value?.capacity?.toString()} readonly></TextField>
+                </FormRow>
+                <FormRow>
+                    <TextField label='Location' value={event.value?.location} readonly data-colspan="3"></TextField>
+                </FormRow>
+                <FormRow>
+                    <TextArea label='Emails to invite (separated by commas)'
+                              placeholder='Enter email addresses here...'
+                              data-colspan="3"
+                              value={emails.value}
+                              helperText="Please enter email addresses separated by commas."
+                              minRows={3} maxRows={5}
+                              onValueChanged={(e) => emails.value = e.detail.value} />
+                </FormRow>
             </FormLayout>
             <HorizontalLayout theme="spacing">
                 <Button theme="primary" disabled={emails.value.length <= 3}

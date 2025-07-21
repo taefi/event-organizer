@@ -12,7 +12,7 @@ CREATE TABLE app_users
     email           VARCHAR(255) NOT NULL,
     name            VARCHAR(255) NULL,
     hashed_password VARCHAR(255) NULL,
-    profile_picture BLOB         NOT NULL,
+    profile_picture BYTEA        NULL, /* BLOB */
     CONSTRAINT pk_app_users PRIMARY KEY (id),
     CONSTRAINT uq_app_users_email UNIQUE (email)
 );
@@ -20,7 +20,7 @@ CREATE TABLE app_users
 CREATE TABLE user_roles
 (
     user_id BIGINT       NOT NULL,
-    `role`  VARCHAR(255) NULL
+    role    VARCHAR(255) NULL
 );
 
 ALTER TABLE user_roles
@@ -30,12 +30,12 @@ CREATE TABLE events
 (
     id              BIGINT        NOT NULL,
     version         INT           NOT NULL,
-    title           VARCHAR(150)  NULL,
-    `description`   VARCHAR(2000) NULL,
-    start_date_time datetime      NULL,
-    end_date_time   datetime      NULL,
-    location        VARCHAR(255)  NULL,
-    capacity        INT           NULL,
+    title           VARCHAR(150)  NOT NULL,
+    description     VARCHAR(2000) NULL,
+    start_date_time timestamp     NOT NULL,
+    end_date_time   timestamp     NOT NULL,
+    location        VARCHAR(255)  NOT NULL,
+    capacity        INT           NOT NULL,
     user_id         BIGINT        NOT NULL,
     CONSTRAINT pk_events PRIMARY KEY (id)
 );

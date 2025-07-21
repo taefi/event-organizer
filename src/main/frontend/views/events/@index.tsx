@@ -11,7 +11,7 @@ import {
     VerticalLayout
 } from "@vaadin/react-components";
 import type Event from "Frontend/generated/com/github/taefi/organizer/event/data/Event";
-import {useSignal} from "@vaadin/hilla-react-signals";
+import {Signal, useSignal} from "@vaadin/hilla-react-signals";
 import {ForwardedRef, useRef} from "react";
 import {useNavigate} from "react-router";
 
@@ -26,11 +26,22 @@ export default function OrganizerEventsView() {
     const autoGridRef = useRef<AutoGridRef>(null);
     const refreshGrid = () => autoGridRef.current?.refresh();
     const initNewEvent = () => selectedEvent.value = EventModel.createEmptyValue();
+
+    const closeEventDetails = () => {
+        selectedEvent.value = null;
+        if (autoGridRef.current) {
+            autoGridRef.current.grid!.selectedItems = [];
+        }
+    }
     return (
         <SplitLayout style={{ height: '100%' }}>
-            <MasterDetailLayout forceOverlay masterMinSize="450px" detailMinSize="450px">
+            <MasterDetailLayout forceOverlay
+                                masterMinSize="450px"
+                                detailMinSize="450px"
+                                onDetailEscapePress={closeEventDetails}
+                                onBackdropClick={closeEventDetails}>
                 <MasterDetailLayout.Master>
-                    <EventList selectedEvent={selectedEvent.value}
+                    <EventList selectedEvent={selectedEvent}
                                onSelect={(e) => selectedEvent.value = e}
                                autoGridRef={autoGridRef}
                                initNewEvent={initNewEvent}/>
@@ -58,7 +69,7 @@ export default function OrganizerEventsView() {
 }
 
 interface EventListProps {
-    selectedEvent: Event | null;
+    selectedEvent: Signal<Event | null>;
     onSelect(event: Event | null): void;
     autoGridRef: ForwardedRef<AutoGridRef<Event>>;
     initNewEvent?: () => void;
@@ -81,7 +92,7 @@ function EventList({ selectedEvent, onSelect, autoGridRef, initNewEvent }: Event
                 <div style={{padding:'var(--lumo-space-m)', fontWeight:'bold'}}>Select an event to view their details:</div>
                 <div slot="end">
                     <Button onClick={initNewEvent} theme="primary" >
-                        <Icon icon="vaadin:plus" slot={'prefix'}/>
+                        <Icon icon="vaadin:plus" slot={'prefix'} />
                         Create Event
                     </Button>
                 </div>
@@ -91,7 +102,7 @@ function EventList({ selectedEvent, onSelect, autoGridRef, initNewEvent }: Event
                 style={{ height: '100%', border: '1px solid var(--lumo-contrast-20pct)' }}
                 service={EventCrudService}
                 model={EventModel}
-                selectedItems={selectedEvent ? [selectedEvent] : []}
+                selectedItems={selectedEvent.value ? [selectedEvent.value] : []}
                 onActiveItemChanged={(e) => {
                     onSelect(e.detail.value ?? null)
                 }}

@@ -61,4 +61,9 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     public boolean isEmailAvailable(String email) {
         return !userRepository.existsByEmail(email);
     }
+
+    @Override
+    public List<User> findByEmailIn(List<String> emails) {
+        return userRepository.findByEmailIn(emails);
+    }
 }

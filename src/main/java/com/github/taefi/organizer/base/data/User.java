@@ -1,7 +1,6 @@
 package com.github.taefi.organizer.base.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +39,6 @@ public class User extends AbstractEntity {
     @NotEmpty
     private Set<Role> roles;
 
-    @Lob
     @Column(length = 1000000)
     private byte[] profilePicture;
 
